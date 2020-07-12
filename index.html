@@ -73,15 +73,17 @@
                 (d.values);
             });
         
-      let totalLength = svg.select('.line').node().getTotalLength();
+      window.onload = function(){
+        let totalLength = svg.select('.line').node().getTotalLength();
 
-      svg.select('.line')
+        svg.select('.line')
          .attr("stroke-dasharray", totalLength + " " + totalLength)
          .attr("stroke-dashoffset", totalLength)
          .transition()
          .duration(2500)
          .ease(d3.easeLinear)
          .attr("stroke-dashoffset", 0);
+      }
     }
     )
 
