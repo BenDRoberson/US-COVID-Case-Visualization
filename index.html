@@ -3,21 +3,23 @@
 <meta charset="utf-8">
 
 <!-- Load d3.js -->
-<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3.v5.js"></script>
 
 <title>
     US COVID Cases by State
 </title>	
 
-<body>
+<body onload='init()'>
     <h1>US COVID Cases by State</h1>
     <!-- Create a div where the graph will take place -->
     <div id="overall_viz"></div>
 
 <script>
-
-        // set the dimensions and margins of the graph
-        var margin = {top: 20, right: 30, bottom: 30, left: 60},
+    async function init(){
+    const data = await d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv");
+  
+  // set the dimensions and margins of the graph
+    var margin = {top: 20, right: 30, bottom: 30, left: 60},
         width = 800 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
     
@@ -30,11 +32,8 @@
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
     
-    //Read the data
-    d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv", function(data) {
-    
-      // group the data: I want to draw one line per group
-      var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+    // group the data: I want to draw one line per group
+    var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
         .key(function(d) { return d.state_abbreviation;})
         .entries(data);
     
@@ -64,27 +63,28 @@
           .data(sumstat)
           .enter()
           .append("path")
-            .attr("fill", "none")
-            .attr("stroke", function(d){ return color(d.key) })
-            .attr("stroke-width", 1.5)
-            .attr("d", function(d){
+          .attr("fill", "none")
+          .attr("stroke", function(d){ return color(d.key) })
+          .attr("stroke-width", 1.5)
+          .attr("d", function(d){
               return d3.line()
                 .x(function(d) { return x(new Date(d.case_date)); })
                 .y(function(d) { return y(+d.cases); })
                 (d.values);
-            });
-    
-      let totalLength = path.node().getTotalLength();
-
-      path
-         .attr("stroke-dasharray", totalLength + " " + totalLength)
-         .attr("stroke-dashoffset", totalLength)
-         .transition()
-         .duration(7500)
-         .ease(d3.easeLinear)
-         .attr("stroke-dashoffset", 0);
-    }
-    )
+            })
+          .attr("stroke-dasharray", function() {
+                        var totalLength = this.getTotalLength();
+                        return totalLength + " " + totalLength;
+                    })
+          .attr("stroke-dashoffset", function() {
+                        var totalLength = this.getTotalLength();
+                        return totalLength;
+                    })
+          .transition()
+          .duration(5000)
+          .ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0);
+}
 
 </script>
 </body>
