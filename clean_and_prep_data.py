@@ -35,6 +35,8 @@ reopenData = pd.read_csv(reopenFile, sep = ",", header = 0)
 
 reopenData = prep_data(reopenData)
 reopenData = reopenData[['state', 'state_abbreviation', 'status', 'restriction_start', 'restriction_end', 'status_details', 'external_link', 'population']]
+del reopenData['restriction_start']
+
 print(reopenData.head())
 print("Number of Rows: " + str(reopenData.shape[0]) + " and Number of Cols: " + str(reopenData.shape[1]))
 
@@ -46,19 +48,25 @@ lockdownData = pd.read_csv(lockdownFile, sep = ",", header = 0)
 
 # Only keep the state-wide stay at home orders
 lockdownData = lockdownData[lockdownData.County.isnull()]
-caseData.rename(columns={'date':'lockdown_date'}, inplace=True)
-
 lockdownData = prep_data(lockdownData)
+
+lockdownData.rename(columns={'date':'lockdown_date'}, inplace=True)
+# All NULL column and All US column
+del lockdownData['county']
+del lockdownData['country']
+
 print(lockdownData.head())
 print("Number of Rows: " + str(lockdownData.shape[0]) + " and Number of Cols: " + str(lockdownData.shape[1]))
 
 print("-------------------- Done Lockdown ---------------------------")
 
 ################# Merge Data sets #####################
-
 tempMergeDf = pd.merge(caseData, reopenData, on = "state")
 finalDF = pd.merge(tempMergeDf, lockdownData, on = "state")
 
 data_overview(finalDF)
+
+finalDF = finalDF[['case_date', 'state', 'state_abbreviation', 'cases', 'deaths', 'status', 'lockdown_date', 'restriction_end', 'status_details', 'external_link', 'population', 'type']]
+
 outputFile = os.path.join(dir, "Data", "Cleaned COVID State Data.csv")
-finalDF.to_csv(outputFile)
+finalDF.to_csv(outputFile, index = False)

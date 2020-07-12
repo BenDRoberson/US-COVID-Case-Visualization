@@ -7,4 +7,4 @@ Data from three sources:
     - This was augmented by me to add in 8 missing states that did not have stay at home orders
 3. Data on Reopening Dates from Rearc on [AWS Data Exchange](https://aws.amazon.com/marketplace/pp/COVID-19-United-States-Reopen-and-Shut-Down-Status/prodview-ejbvrkmiwc5so)
 
-These datasets were condenced and combined to create the final visualization.
+These datasets were condensed and combined to create the final visualization.
