@@ -1,18 +1,24 @@
+<!-- source is https://bl.ocks.org/mbostock/4060366 -->
 <!DOCTYPE html>
 <meta charset="utf-8">
 
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
-<!-- Create a div where the graph will take place -->
-<div id="overall_viz"></div>
+<title>
+    US COVID Cases by State
+</title>	
+
+<body>
+    <!-- Create a div where the graph will take place -->
+    <div id="overall_viz"></div>
 
 <script>
 
     // set the dimensions and margins of the graph
-    var margin = {top: 30, right: 50, bottom: 50, left: 60},
+    var margin = {top: 20, right: 30, bottom: 30, left: 60},
         width = 800 - margin.left - margin.right,
-        height = 800 - margin.top - margin.bottom;
+        height = 500 - margin.top - margin.bottom;
     
     // append the svg object to the body of the page
     var svg = d3.select("#overall_viz")
@@ -24,33 +30,56 @@
               "translate(" + margin.left + "," + margin.top + ")");
     
     //Read the data
-    d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/2_TwoNum.csv", function(data) {
+    d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv", function(data) {
     
-      // Add X axis
-      var x = d3.scaleLinear()
-        .domain([0, 4000])
+      // group the data: I want to draw one line per group
+      var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+        .key(function(d) { return d.state_abbreviation;})
+        .entries(data);
+    
+      // Add X axis --> it is a date format
+      var x = d3.scaleTime()
+        .domain(d3.extent(data, function(d) { return new Date(d.case_date); }))
         .range([ 0, width ]);
       svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")));
     
       // Add Y axis
       var y = d3.scaleLinear()
-        .domain([0, 500000])
-        .range([ height, 0]);
+        .domain([0, d3.max(data, function(d) { return +d.cases; })])
+        .range([ height, 0 ]);
       svg.append("g")
         .call(d3.axisLeft(y));
     
-      // Add dots
-      svg.append('g')
-        .selectAll("dot")
-        .data(data)
-        .enter()
-        .append("circle")
-          .attr("cx", function (d) { return x(d.GrLivArea); } )
-          .attr("cy", function (d) { return y(d.SalePrice); } )
-          .attr("r", 1.5)
-          .style("fill", "#69b3a2")
+      // color palette
+      var res = sumstat.map(function(d){ return d.key }) // list of group names
+      var color = d3.scaleOrdinal()
+        .domain(res)
+        .range(["#5897B3"])
     
-    })
-    </script>
+      // Draw the line
+      svg.selectAll(".line")
+          .data(sumstat)
+          .enter()
+          .append("path")
+            .attr("fill", "none")
+            .attr("stroke", function(d){ return color(d.key) })
+            .attr("stroke-width", 1.5)
+            .attr("d", function(d){
+              return d3.line()
+                .x(function(d) { return x(new Date(d.case_date)); })
+                .y(function(d) { return y(+d.cases); })
+                (d.values)
+            });
+        
+      svg.append("text")
+         .attr("x", 500)
+         .attr("y", 500)
+         .text("Testing");
+    }
+    )
+
+</script>
+</body>
+</html>
