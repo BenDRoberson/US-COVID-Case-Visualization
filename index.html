@@ -53,10 +53,10 @@
         .call(d3.axisLeft(y));
     
       // color palette
-      var res = sumstat.map(function(d){ return d.key }) // list of group names
+      var res = sumstat.map(function(d){ return d.key }); // list of group names
       var color = d3.scaleOrdinal()
         .domain(res)
-        .range(["#5897B3"])
+        .range(["#5897B3"]);
     
       // Draw the line
       svg.selectAll(".line")
@@ -70,13 +70,18 @@
               return d3.line()
                 .x(function(d) { return x(new Date(d.case_date)); })
                 .y(function(d) { return y(+d.cases); })
-                (d.values)
+                (d.values);
             });
         
-      svg.append("text")
-         .attr("x", 500)
-         .attr("y", 500)
-         .text("Testing");
+      let totalLength = svg.select('.line').node().getTotalLength();
+
+      svg.select('.line')
+         .attr("stroke-dasharray", totalLength + " " + totalLength)
+         .attr("stroke-dashoffset", totalLength)
+         .transition()
+         .duration(2500)
+         .ease(d3.easeLinear)
+         .attr("stroke-dashoffset", 0);
     }
     )
 
