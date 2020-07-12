@@ -16,8 +16,8 @@
 
 <script>
 
-    // set the dimensions and margins of the graph
-    var margin = {top: 20, right: 30, bottom: 30, left: 60},
+        // set the dimensions and margins of the graph
+        var margin = {top: 20, right: 30, bottom: 30, left: 60},
         width = 800 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
     
@@ -60,7 +60,7 @@
         .range(["#5897B3"]);
     
       // Draw the line
-      svg.selectAll(".line")
+      var path = svg.selectAll(".line")
           .data(sumstat)
           .enter()
           .append("path")
@@ -73,18 +73,16 @@
                 .y(function(d) { return y(+d.cases); })
                 (d.values);
             });
-        
-      window.onload = function(){
-        let totalLength = svg.select('.line').node().getTotalLength();
+    
+      let totalLength = path.node().getTotalLength();
 
-        svg.select('.line')
+      path
          .attr("stroke-dasharray", totalLength + " " + totalLength)
          .attr("stroke-dashoffset", totalLength)
          .transition()
-         .duration(2500)
+         .duration(7500)
          .ease(d3.easeLinear)
          .attr("stroke-dashoffset", 0);
-      }
     }
     )
 
