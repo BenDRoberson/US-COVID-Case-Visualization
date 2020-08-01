@@ -6,14 +6,15 @@
 <script src="https://d3js.org/d3.v5.js"></script>
 
 <title>
-  US COVID Cases and Deaths by State
+  US Daily COVID Cases and Deaths by State
 </title>
 
 <body>
-  <h1>US COVID Cases by State</h1>
+  <h1>US Daily COVID Cases by State</h1>
+  <div id="paragraph">This first visualization shows the initial spread of COVID-19 prior to any state implemented shutdowns. We see a very fast increading in some larger states like NY and FL while many states are just beginning to see their first COVID cases. Click the button on the bottom-left to continue through the shutdown time period to when states begin to reopen.</div>
   <!-- Create a div where the graph will take place -->
   <div id="overall_viz"></div>
-  <input id="option" type="button" value="Click to Continue to Reopenings" onclick="updateData()" />
+  <input id="option" type="button" value="Click to Continue to Shutdowns" onclick="updateData()" />
 
   <script>
     d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "lockdown_date", "label", false));
@@ -110,20 +111,23 @@
         .style("fill", function (d) { return d.name })
         .style("fill", "#5897B3")
         .style("font-size", 15)
+        .attr("font-weight", 900);
     }
 
     function updateData() {
         var buttonText = document.getElementById("option").value;
-        if(buttonText.toLowerCase() == 'click to continue to reopenings'){
-          console.log("updating data to end of restrictions")
+        if(buttonText.toLowerCase() == 'click to continue to shutdowns'){
+          console.log("updating data to end of restrictions");
           d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "restriction_end", "label", true, true));
-          document.getElementById("option").value = "Click to Continue to Today"
-        } else if(buttonText.toLowerCase() == 'click to continue to today'){
-          console.log("updating data to today")
+          document.getElementById("option").value = "Click to Continue Through Reopenings to Today (July 31)";
+          document.getElementById("paragraph").innerHTML = "From there, once states begin to shutdown we see many of these curves begin to slowly level off, even in hotspots such as NY. At this point many states have seen more cases than before the shutdown, but the rate of cases is slowing a lot.";
+        } else if(buttonText.toLowerCase() == 'click to continue through reopenings to today (july 31)'){
+          console.log("updating data to today");
           d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "random column", "label", true, false));
-          document.getElementById("option").value = "Reset visualization"
+          document.getElementById("option").value = "Reset visualization";
+          document.getElementById("paragraph").innerHTML = "Lastly, when states begin to reopen we see a reversal in the prior trend in some states. We begin to see two groups of states, some states like NY and NJ have fairly flat curves, while some states like CA, FL and TX are seeing an exponential increase in cases since they reopened.";
         } else{
-          console.log("resetting viz")
+          console.log("resetting viz");
           window.location.reload();
         }
     }
