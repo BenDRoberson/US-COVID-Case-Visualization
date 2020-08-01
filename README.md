@@ -1,5 +1,5 @@
 # US-COVID-Case-Visualization
-Web Visualization of US COVID Cases by State
+Web Visualization of US COVID Cases by State - data through July 31, 2020
 
 Data from three sources:
 1. Data on Cases by Day fron the [NY Times](https://github.com/nytimes/covid-19-data/blob/master/us-states.csv)
