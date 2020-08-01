@@ -11,7 +11,10 @@
 
 <body>
   <h1>US Daily COVID Cases by State</h1>
-  <div id="paragraph">This first visualization shows the initial spread of COVID-19 prior to any state implemented shutdowns. We see a very fast increading in some larger states like NY and FL while many states are just beginning to see their first COVID cases. Click the button on the bottom-left to continue through the shutdown time period to when states begin to reopen.</div>
+  <div id="paragraph">This first visualization shows the initial spread of COVID-19 prior to any state implemented
+    shutdowns. We see a very fast increading in some larger states like NY and FL while many states are just beginning
+    to see their first COVID cases. Click the button on the bottom-left to continue through the shutdown time period to
+    when states begin to reopen.</div>
   <!-- Create a div where the graph will take place -->
   <div id="overall_viz"></div>
   <input id="option" type="button" value="Click to Continue to Shutdowns" onclick="updateData()" />
@@ -28,10 +31,10 @@
       if (filterData) {
         var dataFilter = data.filter(function (d) { return d.case_date <= d[filterCol] })
       }
-      else{
+      else {
         var dataFilter = data
       }
-      
+
       if (removeOld) { d3.selectAll("svg").remove() }
       // append the svg object to the body of the page
       var svg = d3.select("#overall_viz")
@@ -91,7 +94,7 @@
           return totalLength;
         })
         .transition()
-        .duration(4000)
+        //.duration(4000)
         .ease(d3.easeLinear)
         .attr("stroke-dashoffset", 0);
 
@@ -102,8 +105,8 @@
         .append("text")
         .datum(function (d) { return { name: d.key, value: d.values[d.values.length - 1] }; }) // keep only the last value of each time series
         .transition()
-        .delay(2000)
-        .duration(2000)
+        //.delay(2000)
+        //.duration(2000)
         .attr("transform", function (d) { return "translate(" + x(new Date(d.value.case_date)) + "," + y(d.value.cases) + ")"; }) // Put the text at the position of the last point
         .attr("y", -7) // shift the text a bit more up
         .attr("x", 2) // shift the text a bit more up
@@ -112,24 +115,182 @@
         .style("fill", "#5897B3")
         .style("font-size", 15)
         .attr("font-weight", 900);
+
+      if (filterCol == 'lockdown_date') {
+        // For NY
+        svg.append("line")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x1", 500)
+        .attr("x2", 550)
+        .attr("y1", 50)
+        .attr("y2", 15)
+        .attr("fill", "none")
+        .attr("stroke", "#DAA520")
+
+        svg.append("text")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x", 430)
+        .attr("y", 70)
+        .attr("fill", "#DAA520")
+        .text("NY Cases Spiking Pre-Shutdown")
+        .attr('text-anchor', 'middle')
+
+        // For small states
+        svg.append("line")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x1", 420)
+        .attr("x2", 510)
+        .attr("y1", 400)
+        .attr("y2", 415)
+        .attr("fill", "none")
+        .attr("stroke", "#DAA520")
+        
+        svg.append("text")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x", 380)
+        .attr("y", 390)
+        .attr("fill", "#DAA520")
+        .text("Many States Start Having Increasing Cases")
+        .attr('text-anchor', 'middle')
+      }
+      else if (filterCol == 'restriction_end') {
+        // For NY
+        svg.append("line")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x1", 470)
+        .attr("x2", 500)
+        .attr("y1", 50)
+        .attr("y2", 46)
+        .attr("fill", "none")
+        .attr("stroke", "#DAA520")
+        
+        svg.append("text")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x", 278)
+        .attr("y", 55)
+        .attr("fill", "#DAA520")
+        .text("NY Reopens With Cases Increasing But Not As Quickly")
+        .attr('text-anchor', 'middle')
+
+        // For Small States
+        svg.append("line")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x1", 380)
+        .attr("x2", 425)
+        .attr("y1", 390)
+        .attr("y2", 400)
+        .attr("fill", "none")
+        .attr("stroke", "#DAA520")
+        
+        svg.append("text")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x", 230)
+        .attr("y", 390)
+        .attr("fill", "#DAA520")
+        .text("Most States Fairly Flat, Some Still Increasing")
+        .attr('text-anchor', 'middle')
+      }
+      if (filterCol == 'random_column') {
+        // For NY
+        svg.append("line")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x1", 470)
+        .attr("x2", 500)
+        .attr("y1", 88)
+        .attr("y2", 95)
+        .attr("fill", "none")
+        .attr("stroke", "#DAA520")
+        
+        svg.append("text")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x", 290)
+        .attr("y", 80)
+        .attr("fill", "#DAA520")
+        .text("NY After Re-Opening Has A Small Increase But Stays Mostly Flat")
+        .attr('text-anchor', 'middle')
+        
+        // For Other Increasing States
+        svg.append("line")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x1", 640)
+        .attr("x2", 680)
+        .attr("y1", 22)
+        .attr("y2", 17)
+        .attr("fill", "none")
+        .attr("stroke", "#DAA520")
+        
+        svg.append("text")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x", 460)
+        .attr("y", 25)
+        .attr("fill", "#DAA520")
+        .text("CA, FL, TX all see exponential growth after re-opening")
+        .attr('text-anchor', 'middle')
+
+        // For Rest of States
+        svg.append("line")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x1", 380)
+        .attr("x2", 425)
+        .attr("y1", 260)
+        .attr("y2", 300)
+        .attr("fill", "none")
+        .attr("stroke", "#DAA520")
+        
+        svg.append("text")
+        .transition()
+        //.delay(3500)
+        //.duration(500)
+        .attr("x", 275)
+        .attr("y", 250)
+        .attr("fill", "#DAA520")
+        .text("Other States Are Mixed, Some Increasing quickly (GA), Some Fairly Flat (NJ)")
+        .attr('text-anchor', 'middle')
+      }
     }
 
     function updateData() {
-        var buttonText = document.getElementById("option").value;
-        if(buttonText.toLowerCase() == 'click to continue to shutdowns'){
-          console.log("updating data to end of restrictions");
-          d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "restriction_end", "label", true, true));
-          document.getElementById("option").value = "Click to Continue Through Reopenings to Today (July 31)";
-          document.getElementById("paragraph").innerHTML = "From there, once states begin to shutdown we see many of these curves begin to slowly level off, even in hotspots such as NY. At this point many states have seen more cases than before the shutdown, but the rate of cases is slowing a lot.";
-        } else if(buttonText.toLowerCase() == 'click to continue through reopenings to today (july 31)'){
-          console.log("updating data to today");
-          d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "random column", "label", true, false));
-          document.getElementById("option").value = "Reset visualization";
-          document.getElementById("paragraph").innerHTML = "Lastly, when states begin to reopen we see a reversal in the prior trend in some states. We begin to see two groups of states, some states like NY and NJ have fairly flat curves, while some states like CA, FL and TX are seeing an exponential increase in cases since they reopened.";
-        } else{
-          console.log("resetting viz");
-          window.location.reload();
-        }
+      var buttonText = document.getElementById("option").value;
+      if (buttonText.toLowerCase() == 'click to continue to shutdowns') {
+        console.log("updating data to end of restrictions");
+        d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "restriction_end", "label", true, true));
+        document.getElementById("option").value = "Click to Continue Through Reopenings to Today (July 31)";
+        document.getElementById("paragraph").innerHTML = "From there, once states begin to shutdown we see many of these curves begin to slowly level off, even in hotspots such as NY. At this point many states have seen more cases than before the shutdown, but the rate of cases is slowing a lot.";
+      } else if (buttonText.toLowerCase() == 'click to continue through reopenings to today (july 31)') {
+        console.log("updating data to today");
+        d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "random_column", "label", true, false));
+        document.getElementById("option").value = "Reset visualization";
+        document.getElementById("paragraph").innerHTML = "Lastly, when states begin to reopen we see a reversal in the prior trend in some states. We begin to see two groups of states, some states like NY and NJ have fairly flat curves, while some states like CA, FL and TX are seeing an exponential increase in cases since they reopened.";
+      } else {
+        console.log("resetting viz");
+        window.location.reload();
+      }
     }
 
   </script>
