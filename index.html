@@ -6,113 +6,129 @@
 <script src="https://d3js.org/d3.v5.js"></script>
 
 <title>
-    US COVID Cases and Deaths by State
-</title>	
+  US COVID Cases and Deaths by State
+</title>
 
-<body onload='init()'>
-    <h1>US COVID Cases by State</h1>
-    <!-- Create a div where the graph will take place -->
-    <div id="overall_viz"></div>
+<body>
+  <h1>US COVID Cases by State</h1>
+  <!-- Create a div where the graph will take place -->
+  <div id="overall_viz"></div>
+  <input id="option" type="button" value="Click to Continue to Reopenings" onclick="updateData()" />
 
-<script>
-    async function init(){
-      const data = await d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv");
-    
-    // set the dimensions and margins of the graph
-      var margin = {top: 20, right: 30, bottom: 30, left: 60},
-          width = 800 - margin.left - margin.right,
-          height = 500 - margin.top - margin.bottom;
+  <script>
+    d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "lockdown_date", "label", false));
 
-      function generatePlot(filterCol){
-        var dataFilter = data.filter(function(d){return d.case_date <= d[filterCol]})
-        
-        // append the svg object to the body of the page
-        var svg = d3.select("#overall_viz")
-          .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-            .attr("transform",
-                  "translate(" + margin.left + "," + margin.top + ")");
-        
-        // group the data: I want to draw one line per group
-        var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
-            .key(function(d) { return d.state_abbreviation;})
-            .entries(dataFilter);
-        
-        // Add X axis --> it is a date format
-        var x = d3.scaleTime()
-            .domain(d3.extent(dataFilter, function(d) { return new Date(d.case_date); }))
-            .range([ 0, width ]);
-        svg.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")));
-        
-        // Add Y axis
-        var y = d3.scaleLinear()
-            .domain([0, d3.max(dataFilter, function(d) { return +d.cases; })])
-            .range([ height, 0 ]);
-        svg.append("g")
-            .call(d3.axisLeft(y));
-        
-        // color palette
-        var res = sumstat.map(function(d){ return d.key }); // list of group names
-        var color = d3.scaleOrdinal()
-            .domain(res)
-            .range(["#5897B3"]);
-        
-        console.log(sumstat)
+    function generatePlot(data, filterCol, label, removeOld = false, filterData = true) {
+      // set the dimensions and margins of the graph
+      var margin = { top: 20, right: 30, bottom: 30, left: 60 },
+        width = 800 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
-        // Draw the line
-        svg.selectAll(".line")
-              .data(sumstat)
-              .enter()
-              .append("path")
-              .attr("fill", "none")
-              .attr("stroke", function(d){ return color(d.key) })
-              .attr("stroke-width", 1.5)
-              .attr("d", function(d){
-                  return d3.line()
-                    .x(function(d) { return x(new Date(d.case_date)); })
-                    .y(function(d) { return y(+d.cases); })
-                    (d.values);
-                })
-              .attr("stroke-dasharray", function() {
-                            var totalLength = this.getTotalLength();
-                            return totalLength + " " + totalLength;
-                        })
-              .attr("stroke-dashoffset", function() {
-                            var totalLength = this.getTotalLength();
-                            return totalLength;
-                        })
-              .transition()
-              .duration(4000)
-              .ease(d3.easeLinear)
-              .attr("stroke-dashoffset", 0);
-        
-        svg.selectAll("myLabels")
+      if (filterData) {
+        var dataFilter = data.filter(function (d) { return d.case_date <= d[filterCol] })
+      }
+      else{
+        var dataFilter = data
+      }
+      
+      if (removeOld) { d3.selectAll("svg").remove() }
+      // append the svg object to the body of the page
+      var svg = d3.select("#overall_viz")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+      // group the data: I want to draw one line per group
+      var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+        .key(function (d) { return d.state_abbreviation; })
+        .entries(dataFilter);
+
+      // Add X axis --> it is a date format
+      var x = d3.scaleTime()
+        .domain(d3.extent(dataFilter, function (d) { return new Date(d.case_date); }))
+        .range([0, width]);
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y-%m-%d")));
+
+      // Add Y axis
+      var y = d3.scaleLinear()
+        .domain([0, d3.max(dataFilter, function (d) { return +d.cases; })])
+        .range([height, 0]);
+      svg.append("g")
+        .call(d3.axisLeft(y));
+
+      // color palette
+      var res = sumstat.map(function (d) { return d.key }); // list of group names
+      var color = d3.scaleOrdinal()
+        .domain(res)
+        .range(["#5897B3"]);
+
+      // Draw the line
+      svg.selectAll(".line")
+        .data(sumstat)
+        .enter()
+        .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function (d) { return color(d.key) })
+        .attr("stroke-width", 1.5)
+        .attr("d", function (d) {
+          return d3.line()
+            .x(function (d) { return x(new Date(d.case_date)); })
+            .y(function (d) { return y(+d.cases); })
+            (d.values);
+        })
+        .attr("stroke-dasharray", function () {
+          var totalLength = this.getTotalLength();
+          return totalLength + " " + totalLength;
+        })
+        .attr("stroke-dashoffset", function () {
+          var totalLength = this.getTotalLength();
+          return totalLength;
+        })
+        .transition()
+        .duration(4000)
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0);
+
+      svg.selectAll("myLabels")
         .data(sumstat)
         .enter()
         .append("g")
         .append("text")
-        .datum(function(d) { return {name: d.key, value: d.values[d.values.length - 1]}; }) // keep only the last value of each time series
+        .datum(function (d) { return { name: d.key, value: d.values[d.values.length - 1] }; }) // keep only the last value of each time series
         .transition()
         .delay(2000)
         .duration(2000)
-        .attr("transform", function(d) { return "translate(" + x(new Date(d.value.case_date)) + "," + y(d.value.cases) + ")"; }) // Put the text at the position of the last point
-        .attr("y", -10) // shift the text a bit more up
+        .attr("transform", function (d) { return "translate(" + x(new Date(d.value.case_date)) + "," + y(d.value.cases) + ")"; }) // Put the text at the position of the last point
+        .attr("y", -7) // shift the text a bit more up
         .attr("x", 2) // shift the text a bit more up
-        .text(function(d) { return d.name; })
-        .style("fill", function(d){ return d.name })
+        .text(function (d) { return d.name; })
+        .style("fill", function (d) { return d.name })
         .style("fill", "#5897B3")
         .style("font-size", 15)
-      }
+    }
 
-      generatePlot("lockdown_date")
-      
+    function updateData() {
+        var buttonText = document.getElementById("option").value;
+        if(buttonText.toLowerCase() == 'click to continue to reopenings'){
+          console.log("updating data to end of restrictions")
+          d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "restriction_end", "label", true, true));
+          document.getElementById("option").value = "Click to Continue to Today"
+        } else if(buttonText.toLowerCase() == 'click to continue to today'){
+          console.log("updating data to today")
+          d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "random column", "label", true, false));
+          document.getElementById("option").value = "Reset visualization"
+        } else{
+          console.log("resetting viz")
+          window.location.reload();
+        }
+    }
 
-}
-
-</script>
+  </script>
 </body>
+
 </html>
