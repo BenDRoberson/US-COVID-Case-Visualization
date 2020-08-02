@@ -68,5 +68,7 @@ data_overview(finalDF)
 
 finalDF = finalDF[['case_date', 'state', 'state_abbreviation', 'cases', 'deaths', 'status', 'lockdown_date', 'restriction_end', 'status_details', 'external_link', 'population', 'type']]
 
+finalDF.sort_values(['state', 'case_date'], ascending=[True, True], inplace=True)
+
 outputFile = os.path.join(dir, "Data", "Cleaned COVID State Data.csv")
 finalDF.to_csv(outputFile, index = False)
