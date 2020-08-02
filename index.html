@@ -15,6 +15,9 @@
     stroke: steelblue;
     stroke-width: 3px;
   }
+  #note {
+    font-size:12px
+  }
 </style>
 
 <body>
@@ -27,6 +30,7 @@
   <div id="overall_viz"></div>
   <input id="option" type="button" value="Click to Continue to Shutdowns" onclick="updateData()" />
   <select id='selectButton' style='display:none'></select>
+  <div id="note">Source data can be found in Github repository</div>
 
   <script>
     d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "lockdown_date", "label", false));
@@ -313,7 +317,7 @@
         console.log("updating data to today");
         d3.csv("https://raw.githubusercontent.com/BenDRoberson/US-COVID-Case-Visualization/master/Data/Cleaned%20COVID%20State%20Data.csv").then(d => generatePlot(d, "random_column", "label", true, false));
         document.getElementById("option").value = "Reset visualization";
-        document.getElementById("paragraph").innerHTML = "Lastly, when states begin to reopen we see a reversal in the prior trend in some states. We begin to see two groups of states, some states like NY and NJ have fairly flat curves, while some states like CA, FL and TX are seeing an exponential increase in cases since they reopened.";
+        document.getElementById("paragraph").innerHTML = "Lastly, when states begin to reopen we see a reversal in the prior trend in some states. We begin to see two groups of states, some states like NY and NJ have fairly flat curves, while some states like CA, FL and TX are seeing an exponential increase in cases since they reopened. In general, it appears that COVID-19 has started to spread a lot more after the reopenings, which begs the question of whether or not future closings will be required. Based on the increase in cases it seems that at least partial shutdowns will be required.";
       } else {
         console.log("resetting viz");
         window.location.reload();
