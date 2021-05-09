@@ -8,3 +8,5 @@ Data from three sources:
 3. Data on Reopening Dates from Rearc on [AWS Data Exchange](https://aws.amazon.com/marketplace/pp/COVID-19-United-States-Reopen-and-Shut-Down-Status/prodview-ejbvrkmiwc5so)
 
 These datasets were condensed and combined to create the final visualization.
+
+You can see the visualization in the associated github pages link.
